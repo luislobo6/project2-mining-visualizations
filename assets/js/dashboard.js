@@ -1,5 +1,7 @@
 
-// Funnel
+//////////*** CODE FOR MAPS MENU ***//////////
+
+// THIS NEEDS TO BE UPDATED
 
 var click1 = d3.select('#click1');
 click1.on("click", function(){
@@ -180,75 +182,235 @@ element.append(newSelect);
     // updatePlotly(data)
   }
 
-  // function updatePlotly(newData){
-  //   Plotly.restyle('myDiv', [newData], layout)
-  // }
-
+  
 });
 
+//////////*** CODE FOR TABLES MENU ***//////////
 
-/////////////////////////////////////////////////////////////
+// WORK IN PROGRESS
 
 var click2 = d3.select('#click2');
 click2.on("click", function(){
-    console.log("testing")
+   
+  // to clear space in html 
+  d3.select("#myDiv").html("");
 
-    // $(document).ready(function(){
+})  // end of event listener click
 
-        // Activate Carousel
-        $("#carouselExampleCaptions").carousel();
 
-        // Enable Carousel Indicators
-        // $(".item").click(function(){
-        // $("#myCarousel").carousel(1);
-        // });
+//////////*** CODE FOR BAR CHARTS MENU ***//////////
 
-        // Enable Carousel Controls
-        // $(".left").click(function(){
-        // $("#myCarousel").carousel("prev");
-        // });
+var click3 = d3.select('#click3');
+click3.on("click", function(){
+   
+  // to clear space in html 
+  d3.select("#myDiv").html("");
+  // To create the header
+  d3.select("#myDiv").append("h1").text("Production in tons: ").insert("span").attr("id", "chart").text("Gold")
+  d3.select("#myDiv").append("hr")
+  // Creating an SVG
+  d3.select("#myDiv").append("svg").attr("class", "bar-chart")
+  d3.select("#myDiv").append("hr")
+  // To create a form
+  d3.select("#myDiv").append("form")
+  // to append three buttons under the form
+  d3.select("form").append("button").attr("type", "button").attr("id", "oro").text("*** Gold ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "plata").text("*** Silver ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "cobre").text("*** Copper ***")
+  
+  // chart keys defined the properties and button ids
+  const charts = [
+    {key: "oro", title: "Gold", color: "orange"},
+    {key: "plata", title: "Silver", color: "blue"},
+    {key: "cobre", title: "Copper", color: "red"},
+  ];
 
-    // });
+  // data used for each chart
+  var chart = {
+    width : 1200,
+    height: 0,         // the height is set after data is loaded
+    current: charts[0] // [0] represents chart to display first
+  }
 
+  // defining a variable that will hold the data
+  var dataMineria = [];
+
+  // Setting scale functions for y axis and colors, and format 2 digits 
+  var barScale = d3.scaleLinear().range([0, 600]); //Validate 600
+  var colorScale = d3.scaleLinear().range([0,1]);
+  const format = d3.format(",.0f");
+
+  const svg = d3.select("svg.bar-chart");
+
+  d3.selectAll("button").on("click", function(){
+    chart.current = charts.filter(d=> d.key == this.id)[0]; //getting button id
+    draw (); //change this to draw() function
     
-});
+  }); //end of selectAll("button")
 
-// var gd = document.getElementById('myDiv');
-// var data = [{
-//     type: 'funnel', 
-//     y: ["Website visit", "Downloads", "Potential customers", "Invoice sent", "Closed delas"], 
-//     x: [13873, 10533, 5443, 2703, 908], 
-//     hoverinfo: 'x+percent previous+percent initial'}];
+  // Load the data from csv
+  d3.csv("assets/data/data.csv", function(data) {
+    console.log(data);
+    data.forEach(function(obj) {
+      dataMineria.push({
+        name: obj.entidad,
+        oro: +obj.oro,
+        plata: +obj.plata,
+        cobre: +obj.cobre
+      });
+    });
+    // setupView()
+    init();
+    // console.log(dataMineria)
+  });
 
-// var layout = {margin: {l: 150}, width:600, height: 500}
+  function setupView(){
+    // Disable all buttons
+    d3.selectAll("button").property("disabled", false);
+    // enable only buttons not currently selected
+    d3.select("#" + chart.current.key).property("disabled", true);
+    // update page title
+    d3.select("#chart").text(chart.current.title);
+    
+    // sorting the production data
+    // console.log(chart.current.key)
+    dataMineria.sort((a, b) => d3.descending(a[chart.current.key], b[chart.current.key]))
+    var dataMinParsed = dataMineria.filter( d => "d." + chart.current.key > 0)
+    console.log(`dataMineria.${chart.current.key}`)
+    console.log("d." + chart.current.key) 
+    console.log(dataMineria)
+    console.log(dataMinParsed) //***REVISIT***
 
-// Plotly.newPlot(gd, data, layout);
+    // update scale domain with data from current selection
+    const maxValue = d3.max(dataMineria, d => d[chart.current.key]);
+    barScale.domain([0,maxValue]);
+    colorScale.domain([0, maxValue]);
+      
+  } // end of setupView function
 
-  /////////////////////////////////////////////////////////////
+  // This function runs once
+  function init () {
+    // Setup svg viewport
+    chart.height = dataMineria.length * 13 // we did not need to adjust * 3
+    svg.attr("width", chart.width)
+      .attr("height", chart.height);
 
-//   var gd1 = document.getElementById('myDiv1');
-//   var data = [{type: 'funnelarea', scalegroup: "first", values: [500, 450, 340, 230, 220, 110],
-//       textinfo: "value", title: {position: "top center", text: "Sales for Sale Person A in U.S."},
-//       domain: {x: [0, 0.5], y: [0, 0.5]}},
-//   {
-//       type: 'funnelarea', scalegroup: "first", values: [600, 500, 400, 300, 200, 100], textinfo: "value",
-//       title: {position: "top center", text: "Sales of Sale Person B in Canada"},
-//       domain: {x: [0, 0.5], y: [0.55, 1]}},
-//   {
-//       type:'funnelarea', scalegroup: "second", values: [510, 480, 440, 330, 220, 100], textinfo: "value",
-//       title: {position: "top left", text: "Sales of Sale Person A in Canada"},
-//       domain: {x: [0.55, 1], y: [0, 0.5]}},
-//   {
-//     type: 'funnelarea', scalegroup: "second", values: [360, 250, 240, 130, 120, 60],
-//     textinfo: "value", title: {position: "top left", text: "Sales of Sale Person B in U.S."},
-//     domain: {x: [0.55, 1], y: [0.55, 1]}}];
+    setupView();
+    
+    // bind the data and draw the firts chart
+    svg.selectAll("g")
+      .data(dataMineria)
+      .enter().append("g").attr("class", "entry")
+      .attr("transform", (d,i) => `translate(0, ${i * 30})`)
+      .each (function(d) {
+        var entry = d3.select(this); // the current entry
+
+        entry.append("text").attr("class", "label category")
+          .attr("y", 15)
+          .attr("x", 0)
+          .text(d.name);
+
+        entry.append("rect").attr("class", "bar")
+          .attr("x", 150)
+          .attr("height", 20)
+          .attr("width", barScale(d[chart.current.key]))
+          .style("fill", 
+            d3.color(chart.current.color).darker(colorScale(d[chart.current.key])))
+
+        entry.append("text").attr("class", "label value")
+          .attr("y", 15)
+          .attr("x", barScale(d[chart.current.key] + 800)) // ***REVISIT***
+          .text(format(d[chart.current.key]) + " tons");
+
+      }) // end .each
+     
+  } // end function init()
+
+  function draw() {
+    setupView();
+
+    svg.selectAll("g.entry").data(dataMineria)
+      .each(function (d,i){
+        d3.select(this).select(".label.category")
+          .text(d.name); // order may have change
+        
+        d3.select(this).select(".bar")
+          .transition().duration(1000).delay(50 * i)
+            .attr("width", barScale(d[chart.current.key]))
+            .style("fill", d3.color(chart.current.color)
+                            .darker(colorScale(d[chart.current.key])));
+        
+        d3.select(this).select(".label.value")
+          .transition().duration(1000).delay(50 * i)
+            .attr("x", barScale(d[chart.current.key]) + 160) //+800 ***REVISIT***
+            .text(format(d[chart.current.key]) + " tons");
+      }) // end .each()
+
+  } // end function draw()
+    
+}); //end of event listener .on "click"
+
+ 
+//////////*** CODE FOR CONCLUSIONS MENU ***//////////
+
+// WORK IN PROGRESS
+
+var click4 = d3.select('#click4');
+click4.on("click", function(){
   
-//   var layout = {width: 600,shapes: [
-//               {x0: 0, x1: 0.5, y0: 0, y1: 0.5},
-//               {x0: 0, x1: 0.5, y0: 0.55, y1: 1},
-//               {x0: 0.55, x1: 1, y0: 0, y1: 0.5},
-//               {x0: 0.55, x1: 1, y0: 0.55, y1: 1}]}
+  function init() {
+  // to clear space in html 
+  d3.select("#myDiv").html("");
+  // To create the header
+  d3.select("#myDiv").append("h1").text("Conclusions") 
+  d3.select("#myDiv").append("hr")
+  // Creating a div class "list-group"
+  d3.select("#myDiv").append("div").attr("class", "list-group")
   
-//   Plotly.newPlot(gd1, data, layout);
-  
-  ////////////////////////////////////////////////////////////////
+  // To create a list of buttons class "list-group-item list-group-item-action"
+  d3.select("div.list-group").append("button").attr("id", "one").attr("class", "list-group-item list-group-item-action").text(" ( 1 ) ")
+  d3.select("div.list-group").append("button").attr("id", "two").attr("class", "list-group-item list-group-item-action").text(" ( 2 ) ")
+  d3.select("div.list-group").append("button").attr("id", "three").attr("class", "list-group-item list-group-item-action").text(" ( 3 ) ")
+  d3.select("div.list-group").append("button").attr("id", "four").attr("class", "list-group-item list-group-item-action").text(" ( 4 ) ")
+  d3.select("div.list-group").append("button").attr("id", "five").attr("class", "list-group-item list-group-item-action").text(" ( 5 ) ")
+    
+  };  
+
+  init()
+
+  // Take Away #1
+  d3.select("#one").on("click", function(){
+    d3.selectAll("button").attr("class", "list-group-item list-group-item-action")
+    d3.select("#one").text(" ( 1 ) Sonora is by far the greatest producer of Gold and Copper")
+      .attr("class", "list-group-item list-group-item-action active")
+  });
+
+  // Take Away #2
+  d3.select("#two").on("click", function(){
+    d3.selectAll("button").attr("class", "list-group-item list-group-item-action")
+    d3.select("#two").text(" ( 2 ) Zacatecas is the larger producer of Silver followed by Chihuahua and Durango")
+    .attr("class", "list-group-item list-group-item-action active")
+  })
+
+  // Take Away #3
+  d3.select("#three").on("click", function(){
+    d3.selectAll("button").attr("class", "list-group-item list-group-item-action")
+    d3.select("#three").text(" ( 3 ) Only a few states in Mexico are dedicated to the Mining Industry")
+    .attr("class", "list-group-item list-group-item-action active")
+  })
+
+  // Take Away #4
+  d3.select("#four").on("click", function(){
+    d3.selectAll("button").attr("class", "list-group-item list-group-item-action")
+    d3.select("#four").text(" ( 4 ) INEGI data can seem confusing but it is very well organized in comparisson with other governmental bodies")
+    .attr("class", "list-group-item list-group-item-action active")
+  })
+
+  // Take Away #5
+  d3.select("#five").on("click", function(){
+    d3.selectAll("button").attr("class", "list-group-item list-group-item-action")
+    d3.select("#five").text(" ( 5 ) The hardest part of the project was to connect the back and the front end")
+    .attr("class", "list-group-item list-group-item-action active")
+  })
+
+})  // end of event listener click
