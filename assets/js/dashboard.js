@@ -6,184 +6,47 @@
 var click1 = d3.select('#click1');
 click1.on("click", function(){
 
+// to clear space in html   
 d3.select("#myDiv").html("");
 
-let months = CapEx2020.map(d=>d.month);
-let actuals = CapEx2020.map(d=>d.actual);
-let budgets = CapEx2020.map(d=>d.budget);
-let actual_ytd = CapEx2020.map(d=>d.actual_ytd);
-let budget_ytd = CapEx2020.map(d=>d.budget_ytd);
+// To create the header
+d3.select("#myDiv").append("h1").text("Mexico Mining Map")
+d3.select("#myDiv").append("hr")
+// Creating myMap Div
+d3.select("#myDiv").append("div").attr("id", "map")
 
-let actuals_trailer = CapEx2020.map(d=>d.actual_Trailer);
-let budgets_trailer = CapEx2020.map(d=>d.budget_Trailer);
-let actual_ytd_trailer = CapEx2020.map(d=>d.actual_ytd_Trailer);
-let budget_ytd_trailer = CapEx2020.map(d=>d.budget_ytd_Trailer);
+let mymap = L.map('map').setView([23.507173012505426, -103.01796971980406], 5); //Set to Zacatecas and zoom of 5
 
-let actuals_auto = CapEx2020.map(d=>d.actual_Auto);
-let budgets_auto = CapEx2020.map(d=>d.budget_Auto);
-let actual_ytd_auto = CapEx2020.map(d=>d.actual_ytd_Auto);
-let budget_ytd_auto = CapEx2020.map(d=>d.budget_ytd_Auto);
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1IjoiaXZpbGNoaXMiLCJhIjoiY2trN2twaDhqMDJmbzJybXVhMzcxNHY3NSJ9.5qG9lj6HT5aXnvZvne4dSg'
+}).addTo(mymap);
 
-console.log(budget_ytd_auto)
+let myStyle = {
+  "color": "#ff7800",
+  "weight": 1,
+  "opacity": 1,
+  "fillOpacity": 0
+};
 
-    var trace1 = {
-        x: months,
-        y: actuals,
-        name: 'Actuals',
-        type: 'bar'
-      };
-      
-      var trace2 = {
-        x: months,
-        y: budgets,
-        name: 'Budget',
-        type: 'bar'
-      };
-      
-      var trace3 = {
-        x: months,
-        y: actual_ytd,
-        name: 'actual (ytd)',
-        type: 'scatter'
-      };
+d3.json("./assets/data/mexico_ent.geojson", function(data){
 
-      var trace4 = {
-        x: months,
-        y: budget_ytd,
-        name: 'bugdet (ytd)',
-        type: 'scatter'
-      };
-
-      var data = [trace1, trace2, trace3, trace4];
-      var layout = {barmode: 'group', title: "CapEx Consolidado"};
-      Plotly.newPlot('myDiv', data, layout);
-
-var newSelect = document.createElement("select");
-newSelect.setAttribute("id", "selDataset");
-
-var newOption1 = document.createElement("option");
-var node1 = document.createTextNode("Consolidated"); 
-newOption1.appendChild(node1);
-newOption1.setAttribute("value", "consol");
-
-var newOption2 = document.createElement("option");
-var node2 = document.createTextNode("TIP Trailer"); 
-newOption2.appendChild(node2);
-newOption2.setAttribute("value", "trailer");
-
-var newOption3 = document.createElement("option");
-var node3 = document.createTextNode("TIP Auto"); 
-newOption3.appendChild(node3);
-newOption3.setAttribute("value", "auto");
-
-newSelect.append(newOption1, newOption2, newOption3)
-var element = document.getElementById("myDiv");
-element.append(newSelect);
-
-  d3.select('#selDataset').on("change", getData);
-  function getData(){
-    var dropdownMenu = d3.select("#selDataset");
-    var dataset = dropdownMenu.property("value");
-    var data = [];
-    if (dataset == 'consol'){
-      var trace1 = {
-        x: months,
-        y: actuals,
-        name: 'Actuals',
-        type: 'bar'
-      };
-      
-      var trace2 = {
-        x: months,
-        y: budgets,
-        name: 'Budget',
-        type: 'bar'
-      };
-      
-      var trace3 = {
-        x: months,
-        y: actual_ytd,
-        name: 'actual (ytd)',
-        type: 'scatter'
-      };
-
-      var trace4 = {
-        x: months,
-        y: budget_ytd,
-        name: 'bugdet (ytd)',
-        type: 'scatter'
-      };
-      var data = [trace1, trace2, trace3, trace4];
-      var layout = {barmode: 'group', title: "CapEx Consolidado"};
-      Plotly.newPlot('myDiv', data, layout);
-    } else if (dataset == 'trailer'){
-      var trace1 = {
-        x: months,
-        y: actuals_trailer,
-        name: 'Actuals Trailer',
-        type: 'bar'
-      };
-      
-      var trace2 = {
-        x: months,
-        y: budgets_trailer,
-        name: 'Budget Trailer',
-        type: 'bar'
-      };
-      
-      var trace3 = {
-        x: months,
-        y: actual_ytd_trailer,
-        name: 'actual Trailer (ytd)',
-        type: 'scatter'
-      };
-
-      var trace4 = {
-        x: months,
-        y: budget_ytd_trailer,
-        name: 'bugdet Trailer (ytd)',
-        type: 'scatter'
-      };
-      var data = [trace1, trace2, trace3, trace4];
-      var layout = {barmode: 'group', title: "CapEx Trailer"};
-      Plotly.newPlot('myDiv', data, layout);
-    } else if (dataset == 'auto'){
-      var trace1 = {
-        x: months,
-        y: actuals_auto,
-        name: 'Actuals Auto',
-        type: 'bar'
-      };
-      
-      var trace2 = {
-        x: months,
-        y: budgets_auto,
-        name: 'Budget Auto',
-        type: 'bar'
-      };
-      
-      var trace3 = {
-        x: months,
-        y: actual_ytd_auto,
-        name: 'actual Auto (ytd)',
-        type: 'scatter'
-      };
-
-      var trace4 = {
-        x: months,
-        y: budget_ytd_auto,
-        name: 'bugdet Auto (ytd)',
-        type: 'scatter'
-      };
-      var data = [trace1, trace2, trace3, trace4];
-      var layout = {barmode: 'group', title: "CapEx Auto"};
-      Plotly.newPlot('myDiv', data, layout);
-    }
-    // updatePlotly(data)
-  }
-
+  // Creating a variable for the map styles
   
-});
+  L.geoJson(data,{
+    style: myStyle
+  }).addTo(mymap)
+})
+
+
+// d3.select("#myDiv").append("hr")
+
+
+});//end of event listener .on "click"
 
 //////////*** CODE FOR TABLES MENU ***//////////
 
@@ -217,12 +80,26 @@ click3.on("click", function(){
   d3.select("form").append("button").attr("type", "button").attr("id", "oro").text("*** Gold ***")
   d3.select("form").append("button").attr("type", "button").attr("id", "plata").text("*** Silver ***")
   d3.select("form").append("button").attr("type", "button").attr("id", "cobre").text("*** Copper ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "plomo").text("*** Lead ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "zinc").text("*** Zinc ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "coque").text("*** Coke ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "fierro").text("*** Iron ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "azufre").text("*** Sulfur ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "barita").text("*** Baryta ***")
+  d3.select("form").append("button").attr("type", "button").attr("id", "fluorita").text("*** Fluorite ***")
   
   // chart keys defined the properties and button ids
   const charts = [
-    {key: "oro", title: "Gold", color: "orange"},
-    {key: "plata", title: "Silver", color: "blue"},
+    {key: "oro", title: "Gold", color: "orange"}, 
+    {key: "plata", title: "Silver", color: "silver"}, 
     {key: "cobre", title: "Copper", color: "red"},
+    {key: "plomo", title: "Lead", color: "blue"}, 
+    {key: "zinc", title: "Zinc", color: "green"},
+    {key: "coque", title: "Coke", color: "yellow"},
+    {key: "fierro", title: "Iron", color: "brown"},
+    {key: "azufre", title: "Sulfur", color: "gray"},
+    {key: "barita", title: "Baryta", color: "purple"},
+    {key: "fluorita", title: "Fluorite", color: "pink"},
   ];
 
   // data used for each chart
@@ -237,7 +114,7 @@ click3.on("click", function(){
 
   // Setting scale functions for y axis and colors, and format 2 digits 
   var barScale = d3.scaleLinear().range([0, 600]); //Validate 600
-  var colorScale = d3.scaleLinear().range([0,1]);
+  var colorScale = d3.scaleLinear().range([0, 1]);
   const format = d3.format(",.0f");
 
   const svg = d3.select("svg.bar-chart");
@@ -256,8 +133,16 @@ click3.on("click", function(){
         name: obj.entidad,
         oro: +obj.oro,
         plata: +obj.plata,
-        cobre: +obj.cobre
+        cobre: +obj.cobre,
+        plomo: +obj.plomo,
+        zinc: +obj.zinc,
+        coque: +obj.coque,
+        fierro: +obj.fierro,
+        azufre: +obj.azufre,
+        barita: +obj.barita,
+        fluorita: +obj.fluorita,  
       });
+      
     });
     // setupView()
     init();
@@ -273,34 +158,61 @@ click3.on("click", function(){
     d3.select("#chart").text(chart.current.title);
     
     // sorting the production data
-    // console.log(chart.current.key)
+    console.log(chart.current.key)
     dataMineria.sort((a, b) => d3.descending(a[chart.current.key], b[chart.current.key]))
-    var dataMinParsed = dataMineria.filter( d => "d." + chart.current.key > 0)
+    // var dataMinParsed = dataMineria.filter( d => d.oro != 0 || d.plata != 0 || d.cobre != 0 || d.plomo != 0 || d.zinc != 0 || d.coque != 0 || d.fierro != 0 || d.azufre != 0 || d.barita != 0 || d.fluorita != 0)  
+    
+    if (chart.current.key === "oro"){
+      var dataMinParsed = dataMineria.filter( d => d.oro)
+    } else if(chart.current.key === "plata"){
+      var dataMinParsed = dataMineria.filter( d => d.plata)
+    } else if(chart.current.key === "cobre"){
+      var dataMinParsed = dataMineria.filter( d => d.cobre)
+    } else if(chart.current.key === "plomo"){
+      var dataMinParsed = dataMineria.filter( d => d.plomo)
+    } else if(chart.current.key === "zinc"){
+      var dataMinParsed = dataMineria.filter( d => d.zinc)
+    } else if(chart.current.key === "coque"){
+      var dataMinParsed = dataMineria.filter( d => d.coque)
+    } else if(chart.current.key === "fierro"){
+      var dataMinParsed = dataMineria.filter( d => d.fierro)
+    } else if(chart.current.key === "azufre"){
+      var dataMinParsed = dataMineria.filter( d => d.azufre)
+    } else if(chart.current.key === "barita"){
+      var dataMinParsed = dataMineria.filter( d => d.barita)
+    } else if(chart.current.key === "fluorita"){
+      var dataMinParsed = dataMineria.filter( d => d.fluorita)
+    } 
+        
     console.log(`dataMineria.${chart.current.key}`)
     console.log("d." + chart.current.key) 
     console.log(dataMineria)
-    console.log(dataMinParsed) //***REVISIT***
+    console.log(dataMinParsed) //***REVISITED***
 
     // update scale domain with data from current selection
-    const maxValue = d3.max(dataMineria, d => d[chart.current.key]);
+    const maxValue = d3.max(dataMinParsed, d => d[chart.current.key]);
     barScale.domain([0,maxValue]);
     colorScale.domain([0, maxValue]);
-      
+    
+    return (dataMinParsed)
+    
   } // end of setupView function
 
   // This function runs once
   function init () {
     // Setup svg viewport
-    chart.height = dataMineria.length * 13 // we did not need to adjust * 3
+    dataMinParsed = setupView();
+    
+    chart.height = dataMinParsed.length * 30 // adjust accordingly
     svg.attr("width", chart.width)
       .attr("height", chart.height);
 
-    setupView();
-    
     // bind the data and draw the firts chart
+    
     svg.selectAll("g")
-      .data(dataMineria)
-      .enter().append("g").attr("class", "entry")
+      .data(dataMinParsed)
+      .enter().append("g")
+      .attr("class", "entry")
       .attr("transform", (d,i) => `translate(0, ${i * 30})`)
       .each (function(d) {
         var entry = d3.select(this); // the current entry
@@ -319,17 +231,20 @@ click3.on("click", function(){
 
         entry.append("text").attr("class", "label value")
           .attr("y", 15)
-          .attr("x", barScale(d[chart.current.key] + 800)) // ***REVISIT***
+          .attr("x", barScale(d[chart.current.key] + 800)) // ***REVISITED***
           .text(format(d[chart.current.key]) + " tons");
 
       }) // end .each
-     
+          
   } // end function init()
 
   function draw() {
-    setupView();
+    
+    init();
 
-    svg.selectAll("g.entry").data(dataMineria)
+    dataMinParsed = setupView();
+    
+    svg.selectAll("g.entry").data(dataMinParsed)
       .each(function (d,i){
         d3.select(this).select(".label.category")
           .text(d.name); // order may have change
@@ -342,9 +257,10 @@ click3.on("click", function(){
         
         d3.select(this).select(".label.value")
           .transition().duration(1000).delay(50 * i)
-            .attr("x", barScale(d[chart.current.key]) + 160) //+800 ***REVISIT***
+            .attr("x", barScale(d[chart.current.key]) + 160) //+800 ***REVISITED***
             .text(format(d[chart.current.key]) + " tons");
       }) // end .each()
+      .exit().remove()  //This line could be commented if we want to keep the height fixed
 
   } // end function draw()
     
