@@ -16,9 +16,11 @@
   <!-- D3.js -->
   <!-- <script src="https://d3js.org/d3.v6.min.js"></script> -->
   
-  <!-- jquery & bootstrap.min.js -->
+  
+  <!-- jquery & bootstrap.min.js & datatbles.net -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
@@ -30,6 +32,9 @@
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
   
+   <!-- datatables.net CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+
    <!-- Custom styles for this template  / Includes map.css for Leaflet-->
   <link href="./assets/css/dashboard.css" rel="stylesheet">
   <!-- <link rel="stylesheet" href="./assets/css/map.css"> -->
@@ -78,20 +83,27 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#" id="click4">
+                <span data-feather="chevrons-right"></span>
+                Summary by mineral
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="click5">
                 <span data-feather="list"></span>
                 Conclusions
               </a>
             </li>
             
           </ul>
-  
-         
-
+       
         </div>
       </nav>
   
       <main class="col-md-3 ms-sm-auto col-lg-10 px-md-4">
-        <div id="myDiv"></div>
+        <div id="myDiv">    
+        </div>
+        <table id="mytable" class="display" style="width:100%"></table>
+
       </main>
 
     </div>
@@ -105,8 +117,10 @@
   <!-- feather script for icons -->
   <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
+  
+
   <script>
-    // to activate feather
+  // to activate feather
     (function () {
       'use strict'  
       feather.replace()
