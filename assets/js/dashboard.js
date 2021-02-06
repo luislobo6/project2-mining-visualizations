@@ -8,7 +8,7 @@ click1.on("click", function(){
 
 // to clear space in html   
 d3.select("#myDiv").html("");
-d3.select("#mytable").html("");
+
 // To create the header
 d3.select("#myDiv").append("h1").text("Mexico Mining Map")
 d3.select("#myDiv").append("hr")
@@ -52,43 +52,18 @@ click2.on("click", function(){
    
   // to clear space in html 
   d3.select("#myDiv").html("");
-  
-
-//<table id="mytable" class="display" style="width:100%"></table>
 
   d3.select("#myDiv").append("h1").text("Data Table of Production in kgms")
   d3.select("#myDiv").append("hr")
-  // Creating an SVG
-  // d3.select("#myDiv").append("table").attr("class", "display").attr("id", "mytable")
-  // let head_table = d3.select("#mytable").append("thead")
-  // head_table.append("th").text("columna1") 
-  // head_table.append("th").text("columna2")
-  // head_table.append("th").text("columna3")
-
-  // <table id="example" class="display" style="width:100%">
-  //       <thead>
-  //           <tr>
-  //               <th>Name</th>
-  //               <th>Position</th>
-  //               <th>Office</th>
-  //               <th>Extn.</th>
-  //               <th>Start date</th>
-  //               <th>Salary</th>
-  //           </tr>
-  //       </thead>
-  //       <tfoot>
-  //           <tr>
-  //               <th>Name</th>
-  //               <th>Position</th>
-  //               <th>Office</th>
-  //               <th>Extn.</th>
-  //               <th>Start date</th>
-  //               <th>Salary</th>
-  //           </tr>
-  //       </tfoot>
-  //   </table>
-
-
+  // Creating a table
+  d3.select("#myDiv").append("table").attr("class", "display").attr("id", "mytable").attr("width", "100%")
+  let head_table = d3.select("#mytable").append("thead").attr("width", "100%")
+  head_table.append("th").text("name")
+  head_table.append("th").text("position")
+  head_table.append("th").text("salary")
+  head_table.append("th").text("start")
+  head_table.append("th").text("office")
+  head_table.append("th").text("extn")
 
   // Creating a data table with ajax
   $(document).ready(function () {
@@ -96,31 +71,20 @@ click2.on("click", function(){
       "ajax": {
         url: "assets/data/continents.json", 
         dataSrc: "data"},
-          // "columns": [
-
-            columns: [
+          columns: [
               { data: 'name' },
               { data: 'position' },
               { data: 'salary' },
-              { data: 'state_date' },
+              { data: 'start_date' },
               { data: 'office' },
               { data: 'extn' }
           ],
-      
-      
-        // { "data": "data" }
-        // { "data": "population" },
-        // { "data": "areakm2" },
-      // ], 
       "paging":   true,
       "ordering": true,
       "info":     true
         
     })
   }); // end of document.ready
-
- 
-
 
 })  // end of event listener click
 
@@ -340,7 +304,6 @@ click4.on("click", function(){
 
 // to clear space in html   
 d3.select("#myDiv").html(""); 
-d3.select("#mytable").html("");
 
 // To create the header
 d3.select("#myDiv").append("h3").text("Summary by type of mineral")
