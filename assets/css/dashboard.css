@@ -106,3 +106,16 @@ body {
   
 }
 
+#map2 { 
+  height: 250px;
+  width: 600px;
+  margin-left: 150px;
+}
+
+.svg-content-responsive {
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+  left: 0;
+}
+
