@@ -387,9 +387,7 @@ click3.on("click", function(){
 
 var click4 = d3.select('#click4');
 click4.on("click", function(){
-
-  console.log("************ Entro en click4 ***********")
-  let mapLimits = "";
+  
   // to clear space in html   
   d3.select("#myDiv").html(""); 
 
@@ -403,18 +401,30 @@ click4.on("click", function(){
   row_Just.append("div").attr("class", "col-4").attr("id", "seldiv")
   // To create h8 tag
   d3.select("#h8div").append("h8").text("Select from the list the mineral you want to visualize")
-  // To create a drillDown select
-  d3.select("#seldiv").append("select").attr("id", "selDataset");
-  d3.select("#selDataset").append("option").attr("value", "oro").text("Gold");
-  d3.select("#selDataset").append("option").attr("value", "plata").text("Silver");
-  d3.select("#selDataset").append("option").attr("value", "cobre").text("Copper");
-  d3.select("#selDataset").append("option").attr("value", "plomo").text("Lead");
-  d3.select("#selDataset").append("option").attr("value", "zinc").text("Zinc");
-  d3.select("#selDataset").append("option").attr("value", "coque").text("Coke");
-  d3.select("#selDataset").append("option").attr("value", "fierro").text("Iron");
-  d3.select("#selDataset").append("option").attr("value", "azufre").text("Sulfur");
-  d3.select("#selDataset").append("option").attr("value", "barita").text("Baryta");
-  d3.select("#selDataset").append("option").attr("value", "fluorita").text("Fluorite");
+  
+
+  // To create a dropDown select
+  let dropdown  = d3.select("#seldiv").append("select")
+  .attr("id", "selDataset");
+
+  // Populate it with D3
+  dropdown.selectAll("option")
+    .data(charts)
+    .enter()
+    .append("option")
+    .attr("value", d => d.key)
+    .text(d=>d.title);
+
+  // d3.select("#selDataset").append("option").attr("value", "oro").text("Gold");
+  // d3.select("#selDataset").append("option").attr("value", "plata").text("Silver");
+  // d3.select("#selDataset").append("option").attr("value", "cobre").text("Copper");
+  // d3.select("#selDataset").append("option").attr("value", "plomo").text("Lead");
+  // d3.select("#selDataset").append("option").attr("value", "zinc").text("Zinc");
+  // d3.select("#selDataset").append("option").attr("value", "coque").text("Coke");
+  // d3.select("#selDataset").append("option").attr("value", "fierro").text("Iron");
+  // d3.select("#selDataset").append("option").attr("value", "azufre").text("Sulfur");
+  // d3.select("#selDataset").append("option").attr("value", "barita").text("Baryta");
+  // d3.select("#selDataset").append("option").attr("value", "fluorita").text("Fluorite");
 
   d3.select("#myDiv").append("hr")
   ////// This chunk of code is for plotting the map //////
@@ -445,31 +455,36 @@ click4.on("click", function(){
   // Value Selected from the DropDown Menu
   let selected_mineral = d3.select("#selDataset").node().value
   let selected_mineral_color = d3.select("#selDataset").node().value
+  // change the first letter to UpperCase to consult our API (it needs the first letter in UpperCase)
   selected_mineral = selected_mineral[0].toUpperCase() + selected_mineral.slice(1)
   
   // $(".leaflet-interactive").remove(); //removes previously drawn lines!
 
+  // from the constant we get the value of the color, to match colors from the bars and the map
   for (let x=0, a=charts.length; x < a; x++ ){
-    console.log(`----------${charts[x].key}------------`)
+    // if the selected mineral in the dropdown matches, then we select that color and break from the for cycle
     if (charts[x].key == selected_mineral_color){
       myStyle.color = charts[x].color
       break;
     }
   }
     
-
+  // Here we call our API, it needs the name of the mineral first letter UpperCase
+  // this API returns a GeoJSON object with only the states that produces the mineral 
   d3.json(`/${selected_mineral}`, function(data){
-    // myStyle.color = chart[selected_mineral_color].color;
+    // change the fillOpacity to know when we have visited one state, because the initial state is less transparent
     myStyle.fillOpacity = 0.5;
+    
+    // Add the geoJson layer to highlight only the states that produces the selected mineral
     L.geoJson(data,{
       pointToLayer: function(data, latlng){
           return L.marker(latlng)
       },
-      onEachFeature: onEachFeature,
-      style: myStyle
+      onEachFeature: onEachFeature, // here we add the popups and events
+      style: myStyle // change style
     }).addTo(mymap)
 
-  }) // end of d3.json
+  }) // end of d3.json call to API
 
 ////// This chunk of code is for displting the table and the bar charts //////
 // Creating a row in bootstrap to hold the table and the bars in the same level
@@ -498,9 +513,15 @@ const format = d3.format(",.0f");
 
 const svg = d3.select("#col-bars").append("svg").attr("class", "bar-chart").classed("svg-container", true) //container class to make it responsive;
 
+///////////////// Event Listener for the dropDown
 d3.selectAll("#selDataset").on("change", function(){
+  console.log("********* Entro a on Change del DropDown *********")
   chart.current = charts.filter(d=> d.key == this.value)[0]; //getting button id
   draw (); //change this to draw() function
+
+  //////// **** Here comes the code for updating the map in a separate function
+  changeDrop(mymap)
+
   
 }); //end of selectAll("button")
 
@@ -707,3 +728,61 @@ click5.on("click", function(){
   })
 
 })  // end of event listener click
+
+
+//////////*** CODE FOR DROPDOWN SELECTION @ RESUMEN ***//////////
+
+// WORK IN PROGRESS
+function changeDrop(mymap){
+  
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken: 'pk.eyJ1IjoiaXZpbGNoaXMiLCJhIjoiY2trN2twaDhqMDJmbzJybXVhMzcxNHY3NSJ9.5qG9lj6HT5aXnvZvne4dSg'
+  }).addTo(mymap);
+
+  // Creating a variable for the map styles
+  let myStyle = {
+    "color": "#ff7800",
+    "weight": 1,
+    "opacity": 1,
+    "fillOpacity": 0
+  };
+
+  // Value Selected from the DropDown Menu
+  let selected_mineral = d3.select("#selDataset").node().value
+  let selected_mineral_color = d3.select("#selDataset").node().value
+  // change the first letter to UpperCase to consult our API (it needs the first letter in UpperCase)
+  selected_mineral = selected_mineral[0].toUpperCase() + selected_mineral.slice(1)
+  
+  $(".leaflet-interactive").remove(); //removes previously drawn lines!
+
+  // from the constant we get the value of the color, to match colors from the bars and the map
+  for (let x=0, a=charts.length; x < a; x++ ){
+    // if the selected mineral in the dropdown matches, then we select that color and break from the for cycle
+    if (charts[x].key == selected_mineral_color){
+      myStyle.color = charts[x].color
+      break;
+    }
+  }
+    
+  // Here we call our API, it needs the name of the mineral first letter UpperCase
+  // this API returns a GeoJSON object with only the states that produces the mineral 
+  d3.json(`/${selected_mineral}`, function(data){
+    // change the fillOpacity to know when we have visited one state, because the initial state is less transparent
+    myStyle.fillOpacity = 0.5;
+    
+    // Add the geoJson layer to highlight only the states that produces the selected mineral
+    L.geoJson(data,{
+      pointToLayer: function(data, latlng){
+          return L.marker(latlng)
+      },
+      onEachFeature: onEachFeature, // here we add the popups and events
+      style: myStyle // change style
+    }).addTo(mymap)
+
+  }) // end of d3.json call to API
+}
