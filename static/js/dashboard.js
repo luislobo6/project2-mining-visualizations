@@ -515,11 +515,11 @@ const svg = d3.select("#col-bars").append("svg").attr("class", "bar-chart").clas
 
 ///////////////// Event Listener for the dropDown
 d3.selectAll("#selDataset").on("change", function(){
-  console.log("********* Entro a on Change del DropDown *********")
+  
   chart.current = charts.filter(d=> d.key == this.value)[0]; //getting button id
   draw (); //change this to draw() function
 
-  //////// **** Here comes the code for updating the map in a separate function
+  //////// **** Here comes the code for updating the map in a separate function **** ////////
   changeDrop(mymap)
 
   
