@@ -17,7 +17,7 @@ const charts = [
   {key: "fluorita", title: "Fluorite", color: "pink"},
 ];
 
-
+// Function that highlights in the map when the mouse is over the area
 function highlightFeature(e) {
   let layer = e.target;
 
@@ -30,6 +30,7 @@ function highlightFeature(e) {
   }
 }
 
+// function that returns the highlight to the regular value when mouse is out of the area
 function resetHighlight(e) {
   let layer = e.target;
 
@@ -44,28 +45,30 @@ function resetHighlight(e) {
 
 
 /**
- * Function that receives feature from GeoJSON and if this feature has a property named place
+ * Function that receives feature from GeoJSON and if this feature has a property named minerals
  * we add the Popup to the point to display more information when each point is clicked
- * in this case we add Magnitude value and Place description
+ * in this case we add Popup's and events for fillColor
  * @param {Object} feature from GeoJSON
  * @param {Object} layer from Leaflet
  */
 function onEachFeature(feature, layer) {
-  // does this feature have a property named place?
+  // does this feature have a property named minerals?
   if (feature.properties && feature.properties.minerals) {
     let str_popup = ``
     
+    // we get the keys and values for the minerals produced in each state
     let keys = Object.keys(feature.properties.minerals)
     let values = Object.values(feature.properties.minerals)
-    // console.log(`++++++++++  ${keys}   ++++++++++`)
-    
+
+    // for each key/value we add them in the popup tag
     for(let i = 0, a= keys.length; i < a; i++ ){
       str_popup = str_popup + `${keys[i]}: ${values[i]} <br>`
-      // console.log(`##########  ${str_popup}   ##########`)
     }
 
+    // Here we bind the popup's to each area
     layer.bindPopup(str_popup);
 
+    // here we bind the events of the mouse over and out
     layer.on({
       mouseover: highlightFeature,
       mouseout: resetHighlight
