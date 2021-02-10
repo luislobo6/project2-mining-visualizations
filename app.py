@@ -16,6 +16,7 @@ db = client.mexico_mining
 # General queries to init application and get all the states GeoJSON and mineral information
 general = db.general.find({},{'_id': False}).next()
 features = list(db.estados.find({},{'_id': False}))
+tabla = list(db.tabla.find({},{'_id': False}))
 
 # Main url the app is deployed
 @app.route("/")
@@ -52,7 +53,16 @@ def minerals(mineral):
     # return the GeoJSON object
     return obj_geojson
 
+# In this URL you can get specific information regarding one mineral, example to try: /Barita
+@app.route("/tabla")
+def tabla():
+    #  go for the tablein the DB
+    tabla = list(db.tabla.find({},{'_id': False}))
+    # return the array
+    return json.dumps(tabla)
+
 
 # Run Flask App
 if __name__ == "__main__":
     app.run(debug=True)
+    

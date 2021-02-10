@@ -100,16 +100,16 @@ body {
 }
 
 /* style for leaflet map */
- 
+
 #map { 
-  height: 450px;
+  height: 850px;
   
 }
 
 #map2 { 
-  height: 250px;
-  width: 600px;
-  margin-left: 150px;
+  height: 650px;
+  width: 900px;
+  /* margin-left: 150px; */
 }
 
 .svg-content-responsive {
